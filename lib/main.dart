@@ -6,17 +6,28 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:amigo_ordering_app/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'utils/colors.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // initialise app based on platform- web or mobile
+
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: 'AIzaSyDKA6OP41yT9HxKJpDp8i2tbjb1QP6fDR8',
+          appId: '1:737732495998:android:72ff7b4850dcaf8fea262f',
+          messagingSenderId: '737732495998',
+          projectId: 'amigo-ordering',
+          storageBucket: "amigo-ordering.appspot.com"));
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
+// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
