@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 flex: 2,
               ),
               SvgPicture.asset(
-                'assets/amigo_ordering.svg',
+                'assets/amigo-ordering.svg',
                 color: primaryColor,
                 height: 64,
               ),

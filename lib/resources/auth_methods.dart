@@ -6,14 +6,15 @@ import 'package:amigo_ordering_app/models/user.dart' as model;
 
 class AuthMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // get user details
   Future<model.User> getUserDetails() async {
-    User currentUser = _auth.currentUser!;
+    User? currentUser = _auth.currentUser;
     if (_auth.currentUser == null) {}
     DocumentSnapshot documentSnapshot =
-        await _firestore.collection('users').doc(currentUser.uid).get();
+        await _firestore.collection('users').doc(currentUser!.uid).get();
 
     return model.User.fromSnap(documentSnapshot);
   }
@@ -39,10 +40,8 @@ class AuthMethods {
           email: email,
           password: password,
         );
-
         String photoUrl = await StorageMethods()
             .uploadImageToStorage('profilePics', file, false);
-
         model.User _user = model.User(
           username: username,
           uid: cred.user!.uid,
