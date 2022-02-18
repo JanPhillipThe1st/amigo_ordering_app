@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "737732495998",
+    "project_id": "amigo-ordering",
+    "storage_bucket": "amigo-ordering.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737732495998:android:72ff7b4850dcaf8fea262f",
+        "android_client_info": {
+          "package_name": "com.yamatoApps.instagram_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "737732495998-n2jrvpus0ugl4rsbooq9h2i38skk1j58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKA6OP41yT9HxKJpDp8i2tbjb1QP6fDR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "737732495998-n2jrvpus0ugl4rsbooq9h2i38skk1j58.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
