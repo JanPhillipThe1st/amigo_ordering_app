@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:amigo_ordering_app/models/user.dart';
+import 'package:amigo_ordering_app/resources/auth_methods.dart';
 
 class UserProvider with ChangeNotifier {
   User? _user;
