@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:amigo_ordering_app/models/post.dart';
+import 'package:amigo_ordering_app/models/product.dart';
 import 'package:amigo_ordering_app/resources/storage_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -8,25 +8,29 @@ import 'package:uuid/uuid.dart';
 class FireStoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<String> uploadPost(String description, Uint8List file, String uid,
-      String username, String profImage) async {
+  Future<String> uploadProduct(
+      String description,
+      double price,
+      int stock,
+      String brand,
+      List<Uint8List> file,
+      String uid,
+      String username,
+      String profImage) async {
     // asking uid here because we dont want to make extra calls to firebase auth when we can just get from our state management
     String res = "Some error occurred";
     try {
-      String photoUrl =
-          await StorageMethods().uploadImageToStorage('posts', file, true);
+      //Changed the scale of the uploadImageToStorage function to handle multiple files
+      List<String> photoUrl =
+          await StorageMethods().uploadImagesToStorage('products', file, true);
       String postId = const Uuid().v1(); // creates unique id based on time
-      Post post = Post(
-        description: description,
-        uid: uid,
-        username: username,
-        likes: [],
-        postId: postId,
-        datePublished: DateTime.now(),
-        postUrl: photoUrl,
-        profImage: profImage,
-      );
-      _firestore.collection('posts').doc(postId).set(post.toJson());
+      Product post = Product(
+          price: price,
+          description: description,
+          stock: stock,
+          photoUrl: photoUrl,
+          brand: brand);
+      _firestore.collection('products').doc(postId).set(post.toJson());
       res = "success";
     } catch (err) {
       res = err.toString();
@@ -39,12 +43,12 @@ class FireStoreMethods {
     try {
       if (likes.contains(uid)) {
         // if the likes list contains the user uid, we need to remove it
-        _firestore.collection('posts').doc(postId).update({
+        _firestore.collection('products').doc(postId).update({
           'likes': FieldValue.arrayRemove([uid])
         });
       } else {
         // else we need to add uid to the likes array
-        _firestore.collection('posts').doc(postId).update({
+        _firestore.collection('products').doc(postId).update({
           'likes': FieldValue.arrayUnion([uid])
         });
       }
