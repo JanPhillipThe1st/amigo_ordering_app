@@ -9,26 +9,31 @@ class FireStoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> uploadProduct(
-      String description,
-      double price,
-      int stock,
-      String brand,
-      List<Uint8List> file,
-      String uid,
-      String username,
-      String profImage) async {
+    String description,
+    double price,
+    int stock,
+    String brand,
+    List<Uint8List> file,
+    String details,
+    String uid,
+  ) async {
     // asking uid here because we dont want to make extra calls to firebase auth when we can just get from our state management
     String res = "Some error occurred";
     try {
       //Changed the scale of the uploadImageToStorage function to handle multiple files
-      List<String> photoUrl =
-          await StorageMethods().uploadImagesToStorage('products', file, true);
+      List<String> photoUrls = [];
+      photoUrls = await Future.wait(file.map((image) =>
+          (StorageMethods().uploadImageToStorage('products', image, true))));
+
       String postId = const Uuid().v1(); // creates unique id based on time
       Product post = Product(
           price: price,
+          rating: [],
+          details: details,
+          variation: [],
           description: description,
           stock: stock,
-          photoUrl: photoUrl,
+          photoUrls: photoUrls,
           brand: brand);
       _firestore.collection('products').doc(postId).set(post.toJson());
       res = "success";

@@ -4,11 +4,15 @@ class TextFieldInput extends StatelessWidget {
   final TextEditingController textEditingController;
   final bool isPass;
   final String hintText;
+  final bool multiLine;
+  final bool isNumber;
   final TextInputType textInputType;
   const TextFieldInput({
     Key? key,
     required this.textEditingController,
     this.isPass = false,
+    this.isNumber = false,
+    this.multiLine = false,
     required this.hintText,
     required this.textInputType,
   }) : super(key: key);
@@ -20,6 +24,7 @@ class TextFieldInput extends StatelessWidget {
     );
 
     return TextField(
+      maxLines: multiLine ? 100 : 1,
       controller: textEditingController,
       decoration: InputDecoration(
         hintText: hintText,
@@ -27,7 +32,9 @@ class TextFieldInput extends StatelessWidget {
         focusedBorder: inputBorder,
         enabledBorder: inputBorder,
         filled: true,
-        contentPadding: const EdgeInsets.all(8),
+        contentPadding: multiLine
+            ? const EdgeInsets.only(left: 8, right: 8, top: 20, bottom: 20)
+            : const EdgeInsets.all(8),
       ),
       keyboardType: textInputType,
       obscureText: isPass,

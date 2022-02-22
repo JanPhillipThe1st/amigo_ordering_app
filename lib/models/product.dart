@@ -6,9 +6,9 @@ class Product {
   final rating;
   final variation;
   final int stock;
-  final List photoUrl;
+  final List photoUrls;
   final String brand;
-  final String details;
+  final details;
 
   const Product({
     required this.price,
@@ -16,9 +16,9 @@ class Product {
     this.rating,
     this.variation,
     required this.stock,
-    required this.photoUrl,
+    required this.photoUrls,
     required this.brand,
-    this.details = '',
+    this.details,
   });
 
   static Product fromSnap(DocumentSnapshot snap) {
@@ -30,7 +30,7 @@ class Product {
         rating: snapshot["rating"],
         variation: snapshot["variation"],
         stock: snapshot["stock"],
-        photoUrl: snapshot["photoUrl"],
+        photoUrls: snapshot["photoUrl"],
         brand: snapshot['brand'],
         details: snapshot['details']);
   }
@@ -41,7 +41,7 @@ class Product {
         "rating": rating,
         "variation": variation,
         "stock": stock,
-        "photoUrl": photoUrl,
+        "photoUrl": photoUrls,
         'brand': brand,
         'details': details
       };
