@@ -17,7 +17,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   @override
   void initState() {
     super.initState();
-    pageController = PageController();
+    pageController = PageController(initialPage: 3);
   }
 
   @override
@@ -73,7 +73,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.favorite,
+              Icons.shopping_cart_outlined,
               color: (_page == 3) ? primaryColor : secondaryColor,
             ),
             label: '',

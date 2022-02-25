@@ -51,6 +51,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                 ),
                 child: ProductCard(
                   snapshot: snapshot.data!.docs[index].data(),
+                  id: snapshot.data!.docs[index].id,
                 ),
               ),
             );

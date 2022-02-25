@@ -1,14 +1,17 @@
 import 'package:amigo_ordering_app/models/product.dart';
 import 'package:amigo_ordering_app/screens/add_product_screen.dart';
-import 'package:amigo_ordering_app/screens/product_purchase_screen.dart';
+import 'package:amigo_ordering_app/screens/product_details_screen.dart';
 import 'package:amigo_ordering_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class ProductCard extends StatefulWidget {
   final snapshot;
-  ProductCard({Key? key, required this.snapshot}) : super(key: key);
+  final id;
+  ProductCard({Key? key, required this.snapshot, required this.id})
+      : super(key: key);
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -79,26 +82,8 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
         ),
-        Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: 100,
-            child: ListView(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 10, bottom: 15),
-                  child: Text(
-                    'Details:\n ${widget.snapshot['details'].toString()}',
-                    style: const TextStyle(
-                        color: primaryColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ],
-            )),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.max,
           children: [
             Column(
@@ -106,23 +91,10 @@ class _ProductCardState extends State<ProductCard> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  width: MediaQuery.of(context).size.width * 0.5,
                   child: Container(
-                    margin: const EdgeInsets.only(left: 10, bottom: 5),
-                    child: Text(
-                      'Rating: (${widget.snapshot['rating'].length.toString()})',
-                      style: const TextStyle(
-                          color: primaryColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 10, bottom: 15),
+                    margin: const EdgeInsets.only(left: 2, bottom: 15),
                     child: Text(
                       'Stocks left: ${widget.snapshot['stock'].toString()}',
                       style: const TextStyle(
@@ -139,7 +111,8 @@ class _ProductCardState extends State<ProductCard> {
               onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => ProductPurchase(
+                      builder: (context) => ProductDetails(
+                            id: widget.id,
                             snapshot: widget.snapshot,
                           ))),
               highlightColor: Colors.amberAccent,

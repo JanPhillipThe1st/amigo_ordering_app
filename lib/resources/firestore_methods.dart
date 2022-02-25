@@ -1,12 +1,15 @@
 import 'dart:typed_data';
 
+import 'package:amigo_ordering_app/models/cart.dart';
 import 'package:amigo_ordering_app/models/product.dart';
 import 'package:amigo_ordering_app/resources/storage_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 
 class FireStoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<String> uploadProduct(
     String description,
@@ -43,18 +46,40 @@ class FireStoreMethods {
     return res;
   }
 
-  Future<String> likePost(String postId, String uid, List likes) async {
+// get cart details
+  Future<Cart> getCartDetails() async {
+    DocumentSnapshot documentSnapshot =
+        await _firestore.collection('carts').doc(_auth.currentUser!.uid).get();
+    if (documentSnapshot.data() == null) {
+      await createCart([], 0, _auth.currentUser!.uid);
+    }
+    return Cart.fromSnap(documentSnapshot);
+  }
+
+  Future<String> createCart(List products, double price, String userID) async {
+    String res = "Internal Server Error. Please Contact Support.";
+    try {
+      Cart cart = Cart(products: products, price: price);
+      await _firestore.collection('carts').doc(userID).set(cart.toJson());
+      res = "Success";
+    } catch (error) {
+      return res;
+    }
+    return res;
+  }
+
+  Future<String> updateRating(String postId, String uid, List likes) async {
     String res = "Some error occurred";
     try {
       if (likes.contains(uid)) {
         // if the likes list contains the user uid, we need to remove it
         _firestore.collection('products').doc(postId).update({
-          'likes': FieldValue.arrayRemove([uid])
+          'rating': FieldValue.arrayRemove([uid])
         });
       } else {
         // else we need to add uid to the likes array
         _firestore.collection('products').doc(postId).update({
-          'likes': FieldValue.arrayUnion([uid])
+          'rating': FieldValue.arrayUnion([uid])
         });
       }
       res = 'success';

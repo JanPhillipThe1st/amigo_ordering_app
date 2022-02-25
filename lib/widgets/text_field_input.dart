@@ -5,6 +5,7 @@ class TextFieldInput extends StatelessWidget {
   final bool isPass;
   final String hintText;
   final bool multiLine;
+  final bool centered;
   final bool isNumber;
   final TextInputType textInputType;
   const TextFieldInput({
@@ -12,6 +13,7 @@ class TextFieldInput extends StatelessWidget {
     required this.textEditingController,
     this.isPass = false,
     this.isNumber = false,
+    this.centered = false,
     this.multiLine = false,
     required this.hintText,
     required this.textInputType,
@@ -26,6 +28,7 @@ class TextFieldInput extends StatelessWidget {
     return TextField(
       maxLines: multiLine ? 100 : 1,
       controller: textEditingController,
+      textAlign: centered ? TextAlign.center : TextAlign.left,
       decoration: InputDecoration(
         hintText: hintText,
         border: inputBorder,
