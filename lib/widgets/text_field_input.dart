@@ -7,6 +7,7 @@ class TextFieldInput extends StatelessWidget {
   final bool multiLine;
   final bool centered;
   final bool isNumber;
+  final double width;
   final TextInputType textInputType;
   const TextFieldInput({
     Key? key,
@@ -17,6 +18,7 @@ class TextFieldInput extends StatelessWidget {
     this.multiLine = false,
     required this.hintText,
     required this.textInputType,
+    this.width = 0,
   }) : super(key: key);
 
   @override
@@ -25,22 +27,44 @@ class TextFieldInput extends StatelessWidget {
       borderSide: Divider.createBorderSide(context),
     );
 
-    return TextField(
-      maxLines: multiLine ? 100 : 1,
-      controller: textEditingController,
-      textAlign: centered ? TextAlign.center : TextAlign.left,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: inputBorder,
-        focusedBorder: inputBorder,
-        enabledBorder: inputBorder,
-        filled: true,
-        contentPadding: multiLine
-            ? const EdgeInsets.only(left: 8, right: 8, top: 20, bottom: 20)
-            : const EdgeInsets.all(8),
-      ),
-      keyboardType: textInputType,
-      obscureText: isPass,
-    );
+    return width == 0
+        ? TextField(
+            maxLines: multiLine ? 100 : 1,
+            controller: textEditingController,
+            textAlign: centered ? TextAlign.center : TextAlign.left,
+            decoration: InputDecoration(
+              hintText: hintText,
+              border: inputBorder,
+              focusedBorder: inputBorder,
+              enabledBorder: inputBorder,
+              filled: true,
+              contentPadding: multiLine
+                  ? const EdgeInsets.only(
+                      left: 8, right: 8, top: 20, bottom: 20)
+                  : const EdgeInsets.all(8),
+            ),
+            keyboardType: textInputType,
+            obscureText: isPass,
+          )
+        : Container(
+            child: TextField(
+              maxLines: multiLine ? 100 : 1,
+              controller: textEditingController,
+              textAlign: centered ? TextAlign.center : TextAlign.left,
+              decoration: InputDecoration(
+                hintText: hintText,
+                border: inputBorder,
+                focusedBorder: inputBorder,
+                enabledBorder: inputBorder,
+                filled: true,
+                contentPadding: multiLine
+                    ? const EdgeInsets.only(
+                        left: 8, right: 8, top: 20, bottom: 20)
+                    : const EdgeInsets.all(8),
+              ),
+              keyboardType: textInputType,
+              obscureText: isPass,
+            ),
+          );
   }
 }

@@ -53,9 +53,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   selectImage() async {
     List<XFile>? files = await ImagePicker().pickMultiImage();
-    for (XFile file in files!) {
-      _files.add(await file.readAsBytes());
+    List<Uint8List> images = [];
+    if (files == null) {
+      showSnackBar(context, "No file selected");
+    } else {
+      for (XFile file in files!) {
+        images.add(await file.readAsBytes());
+      }
+      setState(() {
+        _files = images;
+      });
+      getImageWidgets(_files);
     }
+
     // set state because we need to display the image we selected on the circle avatar
   }
 
@@ -110,35 +120,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
         padding: EdgeInsets.only(left: 20, right: 20),
         children: [
           Center(
-            child: _files != null
-                ? Column(
-                    children: [
-                      const Padding(padding: EdgeInsets.only(bottom: 50)),
-                      Container(
-                        color: mobileSearchColor,
-                        width: MediaQuery.of(context).size.width * .5,
-                        child: CarouselSlider(
-                            items: getImageWidgets(_files),
-                            options: CarouselOptions(
-                              autoPlay: true,
-                              aspectRatio: 1,
-                              enlargeCenterPage: true,
-                            )),
-                      ),
-                      Padding(padding: EdgeInsets.only(top: 20)),
-                      Positioned(
-                          child: IconButton(
-                        icon: const Icon(Icons.add_a_photo),
-                        onPressed: selectImage,
+            child: Column(
+              children: [
+                const Padding(padding: EdgeInsets.only(bottom: 50)),
+                Container(
+                  color: mobileSearchColor,
+                  width: MediaQuery.of(context).size.width * .5,
+                  child: CarouselSlider(
+                      items: getImageWidgets(_files),
+                      options: CarouselOptions(
+                        autoPlay: true,
+                        aspectRatio: 1,
+                        enlargeCenterPage: true,
                       )),
-                      Padding(padding: EdgeInsets.only(top: 10)),
-                    ],
-                  )
-                : Positioned(
+                ),
+                Padding(padding: EdgeInsets.only(top: 20)),
+                Positioned(
                     child: IconButton(
-                    icon: const Icon(Icons.add_a_photo),
-                    onPressed: selectImage,
-                  )),
+                  icon: const Icon(Icons.add_a_photo),
+                  onPressed: selectImage,
+                )),
+                Padding(padding: EdgeInsets.only(top: 10)),
+              ],
+            ),
           ),
           Container(
               width: MediaQuery.of(context).size.width * 0.2,

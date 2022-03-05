@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:amigo_ordering_app/models/cart.dart';
+import 'package:amigo_ordering_app/models/cart_product.dart';
 import 'package:amigo_ordering_app/models/product.dart';
 import 'package:amigo_ordering_app/resources/storage_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,19 +49,33 @@ class FireStoreMethods {
 
 // get cart details
   Future<Cart> getCartDetails() async {
-    DocumentSnapshot documentSnapshot =
+    Cart cart = Cart(price: 0, productIDs: []);
+    DocumentSnapshot? documentSnapshot;
+    documentSnapshot =
         await _firestore.collection('carts').doc(_auth.currentUser!.uid).get();
-    if (documentSnapshot.data() == null) {
-      await createCart([], 0, _auth.currentUser!.uid);
+    if (documentSnapshot.exists) {
+      return Cart.fromSnap(documentSnapshot);
+    } else {
+      createCart([], 0, _auth.currentUser!.uid, 0,"", 0, "");
+      return cart;
     }
-    return Cart.fromSnap(documentSnapshot);
   }
 
-  Future<String> createCart(List products, double price, String userID) async {
+  Future<String> createCart(List productIDs, double price, String userID,
+      double orderAmount, String name, int quantity, String productID) async {
     String res = "Internal Server Error. Please Contact Support.";
     try {
-      Cart cart = Cart(products: products, price: price);
+      Cart? cart = Cart(productIDs: productIDs, price: price);
+      CartProduct? cp = CartProduct(
+          productID: productID, orderAmount: orderAmount quantity: quantity, name: name, price: price);
+
       await _firestore.collection('carts').doc(userID).set(cart.toJson());
+      await _firestore
+          .collection('carts')
+          .doc(userID)
+          .collection('products')
+          .doc(productID)
+          .set(cp.toJson());
       res = "Success";
     } catch (error) {
       return res;
@@ -68,6 +83,18 @@ class FireStoreMethods {
     return res;
   }
 
+  Future<String> deleteFromCart(String productID) async{
+    String res = "Error deleting item.";
+     try {
+       _firestore.collection('carts').doc(_auth.currentUser!.uid).collection('products').doc(productID).delete();
+       _firestore.collection('carts').doc(_auth.currentUser!.uid).update({"productIDs":FieldValue.arrayRemove([productID])});
+       res = "Successfully deleted item from cart.";
+     }  catch (e) {
+       res = e.toString();
+     }
+    return  res;
+
+  }
   Future<String> updateRating(String postId, String uid, List likes) async {
     String res = "Some error occurred";
     try {

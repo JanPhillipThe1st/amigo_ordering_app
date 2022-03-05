@@ -1,8 +1,10 @@
 import 'package:amigo_ordering_app/models/cart.dart';
+import 'package:amigo_ordering_app/models/cart_product.dart';
 import 'package:amigo_ordering_app/resources/auth_methods.dart';
 import 'package:amigo_ordering_app/utils/colors.dart';
 import 'package:amigo_ordering_app/utils/utils.dart';
 import 'package:amigo_ordering_app/widgets/text_field_input.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:amigo_ordering_app/resources/firestore_methods.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -22,9 +24,13 @@ class ProductDetails extends StatefulWidget {
 
 class _ProductDetailsState extends State<ProductDetails> {
   int quantity = 0;
+  double orderAmount = 0;
   TextEditingController quantityController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  Cart _cart = Cart(price: 0, products: []);
+  Cart _cart = Cart(
+    productIDs: [],
+    price: 0,
+  );
   List<String> ratings = [];
   bool _isLoading = false;
   final FireStoreMethods _fireStore = FireStoreMethods();
@@ -48,30 +54,34 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   addToCart() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      Cart? cart = await _fireStore.getCartDetails();
-      if (cart.products.any((element) => widget.id == element)) {
-        showSnackBar(context, "Product is already in your cart");
+    setState(() {
+      _isLoading = true;
+    });
+    Cart cart = await (_fireStore.getCartDetails());
 
-        setState(() {
-          _isLoading = false;
-        });
-        return;
-      } else {
-        cart.price += widget.snapshot['price'];
-        cart.products.add(widget.id);
-        setState(() {
-          _cart = cart;
-        });
-        String res = await _fireStore.createCart(
-            _cart.products, cart.price, _auth.currentUser!.uid);
-        showSnackBar(context, res);
-      }
-    } catch (e) {
-      showSnackBar(context, e.toString());
+    if (cart.productIDs.any((element) => widget.id == element)) {
+      showSnackBar(context, "Product is already in your cart");
+
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    } else {
+      cart.price += (quantity * widget.snapshot['price']);
+      cart.productIDs.add(widget.id);
+      setState(() {
+        _cart = cart;
+        orderAmount += (quantity * widget.snapshot['price']);
+      });
+      String res = await _fireStore.createCart(
+          cart.productIDs,
+          widget.snapshot["price"],
+          _auth.currentUser!.uid,
+          orderAmount,
+          widget.snapshot["description"],
+          quantity,
+          widget.id);
+      showSnackBar(context, res);
     }
     setState(() {
       _isLoading = false;
@@ -205,37 +215,33 @@ class _ProductDetailsState extends State<ProductDetails> {
                   ],
                 ),
               ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                child: InkWell(
-                  onTap: addToCart,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    decoration: ShapeDecoration(
-                        color: primaryColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20))),
-                    child: _isLoading
-                        ? Container(
-                            width: 40,
-                            height: 40,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            'Add to cart',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(),
-                          ),
-                  ),
-                ),
-              )
             ],
+          ),
+          Container(
+            width: double.infinity,
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: const ShapeDecoration(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(100)),
+              ),
+              color: blueColor,
+            ),
+            child: InkWell(
+              onTap: addToCart,
+              child: Container(
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : Text(
+                        'Add to cart',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(),
+                      ),
+              ),
+            ),
           ),
         ],
       ),
